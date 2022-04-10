@@ -1,11 +1,24 @@
-import React from 'react';
-import styled from 'styled-components/macro';
+import React from "react";
+import styled from "styled-components/macro";
+
+function getSourceSet(src, format) {
+  return `
+    ${src} 1x,
+    ${src.replace(".jpg", `@2x.${format}`)} 2x,
+    ${src.replace(".jpg", `@3x.${format}`)} 3x
+  `;
+}
 
 const PhotoGridItem = ({ id, src, alt, tags }) => {
   return (
     <article>
       <Anchor href={`/photos/${id}`}>
-        <Image src={src} />
+        <Picture>
+          <source type="image/avif" srcset={getSourceSet(src, "avif")} />
+          <source type="image/webp" srcset={getSourceSet(src, "webp")} />
+          <source srcset={getSourceSet(src, "jpg")} />
+          <Image src={src} alt={alt} />
+        </Picture>
       </Anchor>
       <Tags>
         {tags.map((tag) => (
@@ -22,12 +35,16 @@ const Anchor = styled.a`
   outline-offset: 4px;
 `;
 
-const Image = styled.img`
+const Picture = styled.picture`
   display: block;
-  width: 100%;
-  height: 300px;
   border-radius: 2px;
   margin-bottom: 8px;
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
 `;
 
 const Tags = styled.ul`
